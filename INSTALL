@@ -1,0 +1,1 @@
+scp input-feed-from-twikibugs root@foswiki.org:/usr/local/bin/input-feed-from-twikibugs
