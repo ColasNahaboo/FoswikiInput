@@ -31,9 +31,10 @@ main () {
 
 get_rss () {
   if ! $debug; then wget -q -O - "$RSS"
-  else if test ! -e /tmp/ifftb; then wget -q -O - "$RSS" >/tmp/ifftb; fi
+  else 
+    if test ! -e /tmp/ifftb; then wget -q -O - "$RSS" >/tmp/ifftb; fi
+    cat /tmp/ifftb
   fi
-  cat /tmp/ifftb
 }
 
 read_item () {
