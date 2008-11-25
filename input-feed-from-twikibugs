@@ -1,10 +1,26 @@
 #!/bin/bash
 set -a
 shopt -s extglob
+USAGE="input-feed-from-twikibugs [options]
+Parses the RSS feed for TWiki.org Bugs web and create a topic in current 
+dir for each item in the feed
+Options:
+  -d     debug mode
+  -v     verbose mode
+"
 RSS='http://develop.twiki.org/~twiki4/cgi-bin/view/Bugs/WebRss'
 tdir=../Tasks
 tweb=Tasks
-if test "x$1" = x; then debug=false; else debug=true;fi
+debug=false
+verbose=false
+
+# Options parsing
+while true; do case x"$1" in
+  x-d) debug=true; shift;;
+  x-v) verbose=true; shift;;
+  x-[?]|x--help|x-help) echo "$USAGE";exit 1;;
+  *) break;;
+esac; done
 
 main () {
   init
@@ -40,7 +56,7 @@ create_item () {
   tt=
 
   case "$name" in Item[0-9]*) : ;; *) return;; esac
-  if test -e $file.txt -a ! $debug; then return; fi
+  if test -e $file.txt; then return; fi
 
   if test -e $tdir/$name.txt; then
     if ! grep -qs UNRELATED_TO_TWIKIBUG_ITEM${name#Item} $tdir/$name.txt; then
@@ -54,6 +70,7 @@ create_item () {
 "
   done
   D file
+  T "  $file"
   cat >$file.txt <<EOF
 ---+ $title
 $desc
@@ -75,9 +92,10 @@ EOF
 }
 
 init () {
-  :
+  if $debug; then rm -f Item*; fi
 }
 
+T () { if $verbose; then echo "$@"; fi; }
 D () { 
   if $debug; then 
     for v in "$@" ;do eval echo -n '$v=$'"$v "; echo -n ' '; done; echo
