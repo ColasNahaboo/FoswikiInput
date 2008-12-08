@@ -13,6 +13,7 @@ tdir=../Tasks
 tweb=Tasks
 debug=false
 verbose=false
+marker=/tmp/input-feed-from-twikibugs.$$
 
 # Options parsing
 while true; do case x"$1" in
@@ -23,10 +24,11 @@ while true; do case x"$1" in
 esac; done
 
 main () {
-  init
+  init 
   get_rss | while read line rest; do
     case "$line" in '<item') read_item "$rest" ;; esac
   done
+  cleanup
 }
 
 get_rss () {
@@ -90,11 +92,23 @@ $tt
 %META:FIELD{name="Url" attributes="" title="Url" value="$url"}%
 EOF
   chmod a+rw $file.txt
+  >$marker
 }
 
 init () {
+  rm -f $marker
   if $debug; then rm -f Item*; fi
 }
+cleanup () {
+  if test -e $marker; then 
+    #cache_clear
+    if test -e /home/foswiki.org/bin/pcad; then
+      wget -O /dev/null -q 'http://foswiki.org/bin/pcad?clear_input'
+    fi
+  fi
+  rm -f $marker
+}
+
 
 T () { if $verbose; then echo "$@"; fi; }
 D () { 
