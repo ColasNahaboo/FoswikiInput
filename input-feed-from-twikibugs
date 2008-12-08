@@ -1,4 +1,5 @@
 #!/bin/bash
+# See 
 set -a
 shopt -s extglob
 USAGE="input-feed-from-twikibugs [options]
@@ -81,8 +82,9 @@ $desc
    * TWiki bug topic:  [[$url][$name]] (
      [[$url?raw=debug][src]] -
      [[$diff][history]] )
-   * Foswiki task topics that seem related:
+   * Foswiki Tasks topics that seem related:
 $tt
+%SEARCH{"^${name}_.*" regex="on" scope="topic" header="   * Items in this Input web relative to the same upstream entry: (you may want to set their status to DONE too if you set it here)" format="      * [[\$topic]]" nonoise="on" reverse="on" excludetopic="%TOPIC%"}%
 
 %META:FORM{name="InputItemForm"}%
 %META:FIELD{name="Status" attributes="" title="Status" value="TODO"}%
